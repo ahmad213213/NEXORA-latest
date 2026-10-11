@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NEXORA</title>
+<style>
+:root{color-scheme:dark;--bg:#090d14;--panel:#101722;--panel2:#151e2b;--line:#263243;--text:#f4f7fb;--muted:#8f9bac;--blue:#1687ff;--blue2:#0974e7}
+*{box-sizing:border-box} body{margin:0;font-family:Inter,Segoe UI,system-ui,sans-serif;background:radial-gradient(circle at 20% 0,#14233b 0,transparent 35%),var(--bg);color:var(--text);min-height:100vh}
+button,input{font:inherit}.app{display:grid;grid-template-columns:220px 1fr;min-height:100vh}.side{border-right:1px solid var(--line);padding:26px 18px;background:#0b111aee}.brand{font-weight:800;letter-spacing:.18em;font-size:18px;margin:0 0 32px}.nav{display:grid;gap:8px}.nav button{border:0;background:transparent;color:var(--muted);text-align:left;padding:11px 12px;border-radius:10px;cursor:pointer}.nav button.active,.nav button:hover{background:var(--panel2);color:var(--text)}
+main{padding:28px 34px}.top{display:flex;align-items:center;justify-content:space-between;gap:20px}.top h1{font-size:28px;margin:0}.primary{border:0;background:var(--blue);color:white;padding:11px 18px;border-radius:10px;font-weight:700;cursor:pointer}.primary:hover{background:var(--blue2)}.secondary{border:1px solid var(--line);background:var(--panel);color:var(--text);padding:10px 14px;border-radius:10px;cursor:pointer}
+.library{margin-top:28px;display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:18px}.empty{color:var(--muted);padding:50px 0}.game{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden}.cover{width:100%;aspect-ratio:3/4;object-fit:cover;background:#151d29}.game .info{padding:12px}.game h3{font-size:15px;margin:0 0 5px}.game small{color:var(--muted)}
+.overlay{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;padding:28px;z-index:20}.overlay.show{display:flex}.modal{width:min(880px,100%);max-height:88vh;overflow:auto;background:#0f1621;border:1px solid var(--line);border-radius:18px;box-shadow:0 30px 80px #0008}.modalHead{display:flex;justify-content:space-between;align-items:center;padding:20px 22px;border-bottom:1px solid var(--line)}.modalHead h2{margin:0;font-size:20px}.x{border:0;background:transparent;color:var(--muted);font-size:24px;cursor:pointer}.content{padding:22px}.field{display:grid;gap:7px;margin-bottom:16px}.field label{font-size:13px;color:var(--muted)}.exeRow{display:flex;gap:10px}.input{width:100%;background:#0a1018;border:1px solid var(--line);color:var(--text);border-radius:10px;padding:12px 13px;outline:none}.input:focus{border-color:#347ec7}.searchRow{display:flex;gap:10px}.searchRow .input{flex:1}
+.status{min-height:24px;color:var(--muted);font-size:13px;margin:14px 0}.results{display:grid;gap:10px}.result{display:grid;grid-template-columns:78px 1fr auto;align-items:center;gap:14px;border:1px solid var(--line);background:#121a26;border-radius:12px;padding:10px;cursor:pointer}.result:hover{border-color:#3b5775;background:#162131}.thumb{width:78px;height:94px;object-fit:cover;border-radius:8px;background:#1b2532}.rtitle{font-weight:750}.rmeta{color:var(--muted);font-size:12px;margin-top:5px}.pick{font-size:12px;color:#81bfff}.viewAll{display:none;margin:10px auto 0;border:0;background:transparent;color:#8ec5ff;font-size:12px;cursor:pointer}.viewAll.show{display:block}.tabBar{display:flex;gap:8px;margin-bottom:14px}.tab{border:1px solid var(--line);background:#111925;color:var(--muted);border-radius:9px;padding:7px 11px;font-size:12px}.tab.active{color:white;border-color:#38618d}.progressWrap{display:none;padding:18px;border:1px solid var(--line);border-radius:12px;background:#0b1119}.progressWrap.show{display:block}.progress{height:8px;border-radius:999px;background:#1b2634;overflow:hidden;margin-top:10px}.bar{height:100%;width:0;background:var(--blue);transition:width .25s}.done{color:#8bd5a8}
+@media(max-width:800px){.app{grid-template-columns:1fr}.side{display:none}main{padding:22px}.result{grid-template-columns:64px 1fr}.thumb{width:64px;height:78px}.pick{display:none}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side"><div class="brand">NEXORA</div><div class="nav"><button class="active">Library</button><button>Discover</button><button>Settings</button></div></aside>
+  <main><div class="top"><div><h1>Library</h1></div><button id="addGame" class="primary">+ Add Game</button></div><div id="library" class="library"></div></main>
+</div>
+<div id="overlay" class="overlay">
+  <section class="modal">
+    <div class="modalHead"><h2>Add Game</h2><button id="close" class="x">×</button></div>
+    <div class="content">
+      <div id="formArea">
+        <div class="field"><label>Game executable</label><div class="exeRow"><input id="exe" class="input" readonly placeholder="Select a .exe file"/><button id="browse" class="secondary">Browse</button></div></div>
+        <div class="field"><label>Game name</label><div class="searchRow"><input id="name" class="input" placeholder="Enter game name"/><button id="search" class="primary">Search</button></div></div>
+        <div id="status" class="status"></div>
+        <div id="topTab" class="tabBar" style="display:none"><span class="tab active">Best matches</span></div>
+        <div id="results" class="results"></div>
+        <button id="viewAll" class="viewAll">View All</button>
+      </div>
+      <div id="allArea" style="display:none"><div class="tabBar"><button id="back" class="tab">← Best matches</button><span class="tab active">All results</span></div><div id="allResults" class="results"></div></div>
+      <div id="progressWrap" class="progressWrap"><div id="progressText">Downloading game information…</div><div class="progress"><div id="bar" class="bar"></div></div></div>
+    </div>
+  </section>
+</div>
+<script>
+const $=s=>document.querySelector(s);let exePath='',all=[];
+const overlay=$('#overlay'),status=$('#status'),results=$('#results'),allResults=$('#allResults'),viewAll=$('#viewAll');
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function resultHtml(g){const img=g.coverImageUrl?`<img class="thumb" src="${esc(g.coverImageUrl)}">`:'<div class="thumb"></div>';const meta=[g.provider,g.releaseDate].filter(Boolean).join(' · ');return `${img}<div><div class="rtitle">${esc(g.title)}</div><div class="rmeta">${esc(meta)}</div></div><div class="pick">Select</div>`}
+function render(list,target){target.innerHTML='';list.forEach(g=>{const el=document.createElement('div');el.className='result';el.innerHTML=resultHtml(g);el.onclick=()=>choose(g);target.appendChild(el)})}
+async function refreshLibrary(){const lib=await window.nexora.getLibrary();const root=$('#library');root.innerHTML='';if(!lib.length){root.innerHTML='<div class="empty">Your library is empty. Add a game to get started.</div>';return}lib.forEach(g=>{const card=document.createElement('article');card.className='game';const cover=g.coverFile?`file://${g.coverFile.replaceAll('\\','/')}`:'';card.innerHTML=`${cover?`<img class="cover" src="${esc(cover)}">`:'<div class="cover"></div>'}<div class="info"><h3>${esc(g.title)}</h3><small>Ready to play</small></div>`;root.appendChild(card)})}
+$('#addGame').onclick=()=>{overlay.classList.add('show');$('#name').focus()};$('#close').onclick=()=>overlay.classList.remove('show');
+$('#browse').onclick=async()=>{const p=await window.nexora.chooseExecutable();if(p){exePath=p;$('#exe').value=p;const file=p.split(/[\\/]/).pop().replace(/\.exe$/i,'');if(!$('#name').value)$('#name').value=file.replace(/[-_]+/g,' ')}};
+async function doSearch(){const q=$('#name').value.trim();if(!exePath){status.textContent='Select the game executable first.';return}if(!q){status.textContent='Enter a game name.';return}status.textContent='Searching…';results.innerHTML='';viewAll.classList.remove('show');try{const data=await window.nexora.searchGames(q);all=data.results||[];if(!all.length){status.textContent='No matches found.';return}status.textContent=`${all.length} match${all.length===1?'':'es'} found. Select the correct game.`;$('#topTab').style.display='flex';render(all.slice(0,3),results);if(all.length>3)viewAll.classList.add('show')}catch(e){status.textContent=e.message||'Search failed.'}}
+$('#search').onclick=doSearch;$('#name').addEventListener('keydown',e=>{if(e.key==='Enter')doSearch()});
+viewAll.onclick=()=>{$('#formArea').style.display='none';$('#allArea').style.display='block';render(all,allResults)};$('#back').onclick=()=>{$('#allArea').style.display='none';$('#formArea').style.display='block'};
+async function choose(g){$('#formArea').style.display='none';$('#allArea').style.display='none';$('#progressWrap').classList.add('show');$('#bar').style.width='8%';$('#progressText').textContent=`Adding ${g.title}…`;try{await window.nexora.addGame({exePath,selected:g});$('#bar').style.width='100%';$('#progressText').innerHTML='<span class="done">Added to Library</span>';await refreshLibrary();setTimeout(()=>{overlay.classList.remove('show');resetModal()},700)}catch(e){$('#progressText').textContent=e.message||'Could not add this game.'}}
+window.nexora.onImportProgress(({progress,message})=>{$('#bar').style.width=`${Math.max(0,Math.min(100,progress||0))}%`;if(message)$('#progressText').textContent=message});
+function resetModal(){exePath='';all=[];$('#exe').value='';$('#name').value='';status.textContent='';results.innerHTML='';allResults.innerHTML='';viewAll.classList.remove('show');$('#topTab').style.display='none';$('#formArea').style.display='block';$('#allArea').style.display='none';$('#progressWrap').classList.remove('show');$('#bar').style.width='0'}
+refreshLibrary();
+</script>
+</body>
+</html>
