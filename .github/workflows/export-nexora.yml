@@ -1,0 +1,21 @@
+name: Export NEXORA Full Package
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/export-nexora.yml"
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create full NEXORA ZIP
+        run: zip -r NEXORA-FULL-INTEGRATED.zip . -x ".git/*" "NEXORA-FULL-INTEGRATED.zip"
+      - name: Upload package
+        uses: actions/upload-artifact@v4
+        with:
+          name: NEXORA-FULL-INTEGRATED
+          path: NEXORA-FULL-INTEGRATED.zip
+          if-no-files-found: error
