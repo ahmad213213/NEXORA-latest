@@ -1,0 +1,14 @@
+{
+  "name": "nexora",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "src/main.mjs",
+  "scripts": {
+    "start": "electron .",
+    "check": "node --check src/main.mjs && node --check src/preload.cjs && node --check src/backend/game-metadata.mjs"
+  },
+  "devDependencies": {
+    "electron": "^38.2.0"
+  }
+}
